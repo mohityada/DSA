@@ -15,7 +15,7 @@
  }
  
 class Solution {
-    public TreeNode buildTreeHelper(int[] preorder, int[] inorder, int sp, int ep, int si, int ei, HashMap<Integer, Integer> inorderMap){
+    private TreeNode buildTreeHelper(int[] preorder, int[] inorder, int sp, int ep, int si, int ei, HashMap<Integer, Integer> inorderMap){
         if(sp > ep || si > ei) return null;
         int val = preorder[sp];
         TreeNode root = new TreeNode(val);
@@ -39,6 +39,30 @@ class Solution {
         return root;
     }
 
+    private void dfsToCalculateParent(TreeNode root, HashMap<TreeNode, TreeNode> parent){
+        if(root == null) return;
+
+        if(root.left != null) {
+            parent.put(root.left, root);
+            dfsToCalculateParent(root.left, parent);
+        }
+        if(root.right != null){
+            parent.put(root.right, root);
+            dfsToCalculateParent(root.right, parent);
+        }
+        return;
+    }
+
+    private Set<TreeNode> pathFromNodeToRoot(HashMap<TreeNode, TreeNode> parent, TreeNode node){
+        Set<TreeNode> pathFromNodeToRoot = new HashSet<>();
+        pathFromNodeToRoot.add(node);
+        while(parent.get(node) != null){
+            pathFromNodeToRoot.add(parent.get(node));
+            node = parent.get(node);
+        }
+        return pathFromNodeToRoot;
+    }
+
     public TreeNode buildTree(int[] preorder, int[] inorder) {
         int n = preorder.length;
         HashMap<Integer, Integer> inorderMap = new HashMap<>();
@@ -47,4 +71,20 @@ class Solution {
         }
         return buildTreeHelper(preorder, inorder, 0, n-1, 0, n-1, inorderMap);
     }
+
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        HashMap<TreeNode, TreeNode> parent = new HashMap<>();
+        parent.put(root, null);
+        dfsToCalculateParent(root, parent);
+        
+        Set<TreeNode> pathToRootFromP = pathFromNodeToRoot(parent, p);
+        
+        TreeNode temp = q;
+        while(!pathToRootFromP.contains(temp)){
+            temp = parent.get(temp);
+        }
+        
+        return temp;
+    }
+
 }

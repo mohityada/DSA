@@ -87,4 +87,36 @@ class Solution {
         return temp;
     }
 
+    private int maxSum = Integer.MIN_VALUE;
+    
+    private int maxPathSumHelper(TreeNode root){
+        if(root == null) return Integer.MIN_VALUE/4;
+
+        int L = maxPathSumHelper(root.left);
+        int R = maxPathSumHelper(root.right);
+        
+        maxSum = Math.max(maxSum, Math.max(L, R));
+        
+        if(L < 0  && R < 0) {
+            maxSum = Math.max(maxSum, root.val);
+            return root.val;
+        }
+
+        else if(L < 0){
+            maxSum = Math.max(maxSum, root.val + R);
+            return root.val + R;
+        } else if(R < 0){
+            maxSum = Math.max(maxSum, root.val + L);
+            return root.val + L;
+        }
+        
+        maxSum = Math.max(maxSum, root.val + L + R);
+        return  Math.max(L, R) + root.val;
+    }
+
+    public int maxPathSum(TreeNode root) {
+        maxPathSumHelper(root);
+        return maxSum;   
+    }
+
 }
